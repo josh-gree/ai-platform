@@ -1,11 +1,13 @@
 import pytest
 
-import tensorflow as tf
+import tensorflow as tf  
+ 
 import numpy as np
 
 from collections import namedtuple
 
 from model.model import model_fn
+from model.data import data_fn
 
 @pytest.fixture(scope='module')
 def params():
@@ -96,7 +98,7 @@ def test_train(params, features, labels):
     assert spec.loss is not None
     assert spec.train_op is not None
 
-def test_create_estimator(params, features, labels):
+def test_create_estimator(params, features, labels, data_dir):
     '''
     Check we can succesfully create estimator from model_fn and train 
     and evaluate for one step.
@@ -106,5 +108,6 @@ def test_create_estimator(params, features, labels):
         params=params
     )
 
-    estimator.train(lambda : (features, labels), steps=1)
-    estimator.evaluate(lambda : (features, labels), steps=1)
+    dataset = data_fn(directory=str(data_dir))
+    estimator.train(lambda : dataset, steps=1)
+    estimator.evaluate(lambda : dataset, steps=1)
