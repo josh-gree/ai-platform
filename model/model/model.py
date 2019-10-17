@@ -6,17 +6,39 @@ import tensorflow_hub as hub
 
 from tensorflow import keras
 
+from collections import namedtuple
+
+Params = namedtuple(
+    'params', 
+    [
+        'pretrained_img_sz',
+        'pretrained_url',
+        'num_hidden_units',
+        'num_classes',
+        'batch_size',
+        'learning_rate',
+        'pretrained_tag'
+        ]
+    )
+
 
 def model_fn(features, labels, mode, params) -> tf.estimator.EstimatorSpec:
     '''
     This function constructs model and returns and EstimatorSpec.
     '''
-
-    inputs = tf.reshape(features["input"], [-1, params.pretrained_img_sz, params.pretrained_img_sz, 3])
+    try:
+        inputs = tf.reshape(features['feature'], [-1, params.pretrained_img_sz, params.pretrained_img_sz, 3])
+    except TypeError:
+        inputs = tf.reshape(features, [-1, params.pretrained_img_sz, params.pretrained_img_sz, 3])
 
     feature_extractor_url = params.pretrained_url
+    if params.pretrained_tag is None:
+        tags = []
+    else:
+        tags = [params.pretrained_tag]
+    module = hub.Module(feature_extractor_url, tags=tags)
     feature_extractor_layer = hub.KerasLayer(
-        feature_extractor_url,
+        module,
         input_shape=(params.pretrained_img_sz,params.pretrained_img_sz,3)
     )
 
@@ -68,7 +90,7 @@ def model_fn(features, labels, mode, params) -> tf.estimator.EstimatorSpec:
         labels = tf.reshape(labels, [-1, params.num_classes]) # TODO: shouldnt need this reshape
         loss =  tf.losses.softmax_cross_entropy(onehot_labels=labels,logits=logits)
 
-        optimizer = tf.train.AdamOptimizer()
+        optimizer = tf.train.AdamOptimizer(learning_rate=params.learning_rate)
         train_op = optimizer.minimize(
             loss=loss,
             global_step=tf.contrib.framework.get_global_step(),
