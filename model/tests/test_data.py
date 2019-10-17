@@ -39,7 +39,7 @@ def test_data_fn_output_shape(data_dir):
         img_shape=(FEATURE_IMG_SZ,FEATURE_IMG_SZ), 
         shuffle=False
     )
-    output_shapes = dataset.output_shapes
+    output_shapes = dataset().output_shapes
 
     img_shape = output_shapes[0]
     label_shape = output_shapes[1]
@@ -55,7 +55,7 @@ def test_data_fn_sz(data_dir):
         batch_size = batch_size, 
         shuffle=False
     )
-    data_set_sz = tf.data.experimental.cardinality(dataset)
+    data_set_sz = tf.data.experimental.cardinality(dataset())
     with tf.Session() as sess:
         data_set_sz = data_set_sz.eval()
 
@@ -66,4 +66,4 @@ def test_data_fn(data_dir):
         directory=str(data_dir)
     )
 
-    assert isinstance(dataset,tf.data.Dataset)
+    assert isinstance(dataset(),tf.data.Dataset)
