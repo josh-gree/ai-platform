@@ -14,6 +14,10 @@ def create_random_jpeg(sz,name,dir):
     imageio.imwrite(str(dir) + f'/{name}', rand_img)
 
 @pytest.fixture(scope='function')
+def data_dir_img_shape():
+    return (FEATURE_IMG_SZ,FEATURE_IMG_SZ)
+
+@pytest.fixture(scope='function')
 def data_dir(tmpdir):
     '''
     Create some random images in correct

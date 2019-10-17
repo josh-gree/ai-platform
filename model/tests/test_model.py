@@ -23,7 +23,7 @@ def params():
         )
 
     batch_size = 10
-    num_classes = 4
+    num_classes = 3
     num_hidden_units = 256
 
     pretrained_img_sz = 224
@@ -55,9 +55,7 @@ def features(params):
     features = tf.constant(
         np.random.rand(params.batch_size,params.pretrained_img_sz,params.pretrained_img_sz,3).astype('float32')
     )
-    return {
-        'input': features
-    }
+    return features
 
 def test_predict(params, features, labels):
     '''
@@ -98,7 +96,7 @@ def test_train(params, features, labels):
     assert spec.loss is not None
     assert spec.train_op is not None
 
-def test_create_estimator(params, features, labels, data_dir):
+def test_create_estimator(params, features, labels, data_dir, data_dir_img_shape):
     '''
     Check we can succesfully create estimator from model_fn and train 
     and evaluate for one step.
@@ -108,6 +106,7 @@ def test_create_estimator(params, features, labels, data_dir):
         params=params
     )
 
-    dataset = data_fn(directory=str(data_dir))
-    estimator.train(lambda : dataset, steps=1)
-    estimator.evaluate(lambda : dataset, steps=1)
+    expected_input_sz = params.pretrained_img_sz
+    dataset = data_fn(directory=str(data_dir),img_shape=(expected_input_sz,expected_input_sz))
+    estimator.train(dataset, steps=1)
+    estimator.evaluate(dataset, steps=1)
