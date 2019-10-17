@@ -7,11 +7,13 @@ verify_ssl = true
 pytest = "*"
 ipython = "*"
 imageio = "*"
+jupyterlab = "*"
 
 [packages]
 model = {editable = true,path = "./model"}
 tensorflow = "==1.14"
 tensorflow-hub = "*"
+click = "*"
 
 [requires]
 python_version = "3.7"
