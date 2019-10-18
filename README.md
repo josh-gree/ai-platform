@@ -1,6 +1,6 @@
 # ai-platform
 
-code to locally train tf estimator for image classification.
+code to locally train and deploy tf estimator for image classification.
 
 ## Training
 
