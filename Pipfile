@@ -11,7 +11,7 @@ jupyterlab = "*"
 
 [packages]
 model = {editable = true,path = "./model"}
-tensorflow = "==1.14"
+tensorflow = "==2.6.4"
 tensorflow-hub = "*"
 click = "*"
 
